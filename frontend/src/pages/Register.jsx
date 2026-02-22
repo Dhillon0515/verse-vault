@@ -11,7 +11,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   // REPLACE THIS with your actual Render URL
-  const API_URL = "https://verse-vault-tjxk.onrender.com";
+  const API_URL = "https://verse-vault-tjxk.onrender.com/api/auth/register";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

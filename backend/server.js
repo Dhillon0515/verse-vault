@@ -10,7 +10,11 @@ connectDB();
 const app = express();
 
 // <-- 2. TELL THE SERVER TO USE CORS HERE (Put it before the routes!)
-app.use(cors()); 
+app.use(cors({
+  origin: "https://verse-vault-seven.vercel.app", // Your Vercel URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use('/api/auth', authRoutes); 
