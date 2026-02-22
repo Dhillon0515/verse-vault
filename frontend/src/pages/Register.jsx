@@ -1,14 +1,17 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { User, Mail, Lock, PenTool, Sparkles } from 'lucide-react';
 
 const Register = () => {
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: ''
-  });
+
+  // REPLACE THIS with your actual Render URL
+  const API_URL = "https://verse-vault-tjxk.onrender.com";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,100 +19,117 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Sending data to the backend
-      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
-      
-      console.log("Success:", response.data);
-      alert("Welcome to VerseVault! Your account is created.");
-      
-      // Automatically redirect to the Login page
-      navigate('/login');
+    setLoading(true);
+    setError('');
 
-    } catch (error) {
-      // Handling errors (like user already exists)
-      console.error("Registration Error:", error.response?.data?.message);
-      alert(error.response?.data?.message || "Something went wrong during registration");
+    try {
+      await axios.post(API_URL, formData);
+      // If registration is successful, send them to login
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Aesthetic static image for the poetic theme
-  const bgImage = "https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop";
-
   return (
-    <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4 font-sans">
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row">
-        
-        {/* LEFT COLUMN: The Image (Visible on all screens with height adjustment) */}
-        <div 
-          className="h-48 md:h-auto md:w-1/2 bg-cover bg-center block" 
-          style={{ backgroundImage: `url(${bgImage})` }}
-        >
-          {/* Subtle overlay to blend with the pastel theme */}
-          <div className="h-full w-full bg-indigo-900 bg-opacity-5"></div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-100 flex items-center justify-center p-6 relative overflow-hidden">
+      
+      {/* BACKGROUND DECORATIONS */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-rose-200 rounded-full blur-[120px] opacity-40"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-200 rounded-full blur-[120px] opacity-40"></div>
 
-        {/* RIGHT COLUMN: The Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-12">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-2 tracking-wider font-serif">VerseVault</h2>
-          <p className="text-indigo-400 text-center mb-8 italic">Begin your poetic journey.</p>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Username</label>
-              <input 
-                type="text" 
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-purple-50 border border-purple-100 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:bg-white transition-all" 
-                placeholder="poet_name"
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Email Address</label>
-              <input 
-                type="email" 
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-purple-50 border border-purple-100 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:bg-white transition-all" 
-                placeholder="you@example.com"
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-1">Password</label>
-              <input 
-                type="password" 
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-purple-50 border border-purple-100 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:bg-white transition-all" 
-                placeholder="••••••••"
-                required 
-              />
-            </div>
-            <button 
-              type="submit" 
-              className="w-full py-3 px-4 bg-indigo-400 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition duration-200 transform hover:-translate-y-1"
-            >
-              Create My Account
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-gray-500">
-            Already have an account? 
-            <button 
-              onClick={() => navigate('/login')} 
-              className="text-indigo-500 hover:text-indigo-600 font-semibold ml-1 cursor-pointer"
-            >
-              Log in here
-            </button>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full backdrop-blur-xl bg-white/60 border border-white/80 p-10 rounded-[2.5rem] shadow-2xl relative z-10"
+      >
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-sm mb-4">
+             <img src="/favicon.png" alt="Logo" className="w-10 h-10" />
           </div>
+          <h1 className="text-3xl font-serif font-bold text-slate-800">Join VerseVault</h1>
+          <p className="text-slate-400 text-sm mt-2 font-medium italic">Begin your poetic journey</p>
         </div>
-      </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 text-red-500 text-xs font-bold rounded-2xl border border-red-100 text-center uppercase tracking-wider">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* USERNAME */}
+          <div className="relative">
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              required
+              className="w-full pl-12 pr-4 py-4 bg-white/50 border border-white rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 transition-all font-medium placeholder:text-slate-300"
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="relative">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              required
+              className="w-full pl-12 pr-4 py-4 bg-white/50 border border-white rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 transition-all font-medium placeholder:text-slate-300"
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="relative">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+              className="w-full pl-12 pr-4 py-4 bg-white/50 border border-white rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 transition-all font-medium placeholder:text-slate-300"
+              onChange={handleChange}
+            />
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            disabled={loading}
+            type="submit"
+            className="w-full py-4 bg-rose-400 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 hover:bg-rose-500 transition-all flex items-center justify-center gap-2"
+          >
+            {loading ? "Creating Vault..." : (
+              <>
+                <Sparkles size={18} /> Create Account
+              </>
+            )}
+          </motion.button>
+        </form>
+
+        <p className="text-center mt-8 text-slate-500 text-sm font-medium">
+          Already have a sanctuary?{' '}
+          <Link to="/login" className="text-rose-500 font-bold hover:underline">
+            Login here
+          </Link>
+        </p>
+      </motion.div>
+      
+      {/* DECORATIVE FLOATING ELEMENT */}
+      <motion.div 
+        animate={{ y: [0, -10, 0] }} 
+        transition={{ repeat: Infinity, duration: 4 }}
+        className="fixed top-10 right-10 text-rose-300/20"
+      >
+        <PenTool size={100} />
+      </motion.div>
     </div>
   );
 };
